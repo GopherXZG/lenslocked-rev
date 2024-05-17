@@ -27,7 +27,7 @@ func main() {
 		User:     "baloo",
 		Password: "junglebook",
 		Database: "lenslocked",
-		SSLMode:  "false",
+		SSLMode:  "disable",
 	}
 	db, err := sql.Open("pgx", cfg.String())
 	if err != nil {
@@ -39,4 +39,20 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Connected")
+
+	_, err = db.Exec(`
+        CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			name TEXT,
+			email TEXT UNIQUE NOT NULL,
+		);	
+
+		CREATE TABLE IF NOT EXISTS orders (
+			id SERIAL PRIMARY KEY,
+			user_id INT NOT NULL,
+			amount INT,
+			description TEXT,
+		)
+	`)
+	fmt.Println("Tables created")
 }
